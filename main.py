@@ -1,4 +1,6 @@
 import time
+import json
+from pathlib import Path
 
 def calculate_mac(pattern, filter_data):
     total = 0.0
@@ -63,6 +65,14 @@ def normalize_label(label):
         return "X"
 
     raise ValueError(f"알 수 없는 라벨: {label}")
+
+def load_data():
+    path = Path(__file__).parent / "data.json"
+
+    with open(path, "r", encoding="utf-8-sig") as file:
+        data = json.load(file)
+
+    return data
 
 if __name__ == "__main__":
     filter_a = read_matrix("필터 A")
