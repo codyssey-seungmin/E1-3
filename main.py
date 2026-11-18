@@ -1,3 +1,5 @@
+import time
+
 def calculate_mac(pattern, filter_data):
     total = 0.0
 
@@ -39,6 +41,18 @@ def read_matrix(name):
 
     return matrix
 
+def measure_mac_time(pattern, filter_data):
+    total_time = 0.0
+
+    for repeat in range(10):
+        start = time.perf_counter()
+        calculate_mac(pattern, filter_data)
+        end = time.perf_counter()
+
+        total_time += end - start
+
+    return total_time / 10 * 1000
+
 if __name__ == "__main__":
     filter_a = read_matrix("필터 A")
     filter_b = read_matrix("필터 B")
@@ -52,3 +66,9 @@ if __name__ == "__main__":
     print("A 점수:", score_a)
     print("B 점수:", score_b)
     print("판정:", compare_scores(score_a, score_b))
+
+    average_ms = measure_mac_time(pattern, filter_a)
+
+    print("\n[성능 분석: MAC 함수 1회 기준, 10회 평균]")
+    print("크기 | 평균 시간(ms) | 연산 횟수(N²)")
+    print(f"3×3 | {average_ms:.6f} | 9")
