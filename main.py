@@ -40,12 +40,14 @@ def read_matrix(name):
     return matrix
 
 if __name__ == "__main__":
-    cross = [[0, 1, 0], [1, 1, 1], [0, 1, 0]]
-    x_shape = [[1, 0, 1], [0, 1, 0], [1, 0, 1]]
+    filter_a = read_matrix("필터 A")
+    filter_b = read_matrix("필터 B")
+    print("필터 A와 B 저장 완료")
 
     pattern = read_matrix("패턴")
-    score_a = calculate_mac(pattern, cross)
-    score_b = calculate_mac(pattern, x_shape)
+
+    score_a = calculate_mac(pattern, filter_a)
+    score_b = calculate_mac(pattern, filter_b)
 
     print("A 점수:", score_a)
     print("B 점수:", score_b)
