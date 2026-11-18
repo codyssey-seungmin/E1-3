@@ -53,6 +53,17 @@ def measure_mac_time(pattern, filter_data):
 
     return total_time / 10 * 1000
 
+def normalize_label(label):
+    label = label.strip().lower()
+
+    if label in ("+", "cross"):
+        return "Cross"
+
+    if label == "x":
+        return "X"
+
+    raise ValueError(f"알 수 없는 라벨: {label}")
+
 if __name__ == "__main__":
     filter_a = read_matrix("필터 A")
     filter_b = read_matrix("필터 B")
