@@ -96,6 +96,28 @@ def validate_matrix(matrix, size):
             if type(value) not in (int, float):
                 raise ValueError("표에는 숫자만 들어가야 합니다.")
 
+def get_filters(dataset, size):
+    raw_filters = dataset["filters"][f"size_{size}"]
+
+    if not isinstance(raw_filters, dict):
+        raise ValueError("필터는 이름과 표를 묶은 딕셔너리여야 합니다.")
+
+    filters = {}
+
+    for label, matrix in raw_filters.items():
+        standard_label = normalize_label(label)
+        validate_matrix(matrix, size)
+
+        if standard_label in filters:
+            raise ValueError(f"필터 이름이 중복됩니다: {standard_label}")
+
+        filters[standard_label] = matrix
+
+    if "Cross" not in filters or "X" not in filters:
+        raise ValueError("Cross와 X 필터가 모두 필요합니다.")
+
+    return filters
+
 if __name__ == "__main__":
     filter_a = read_matrix("필터 A")
     filter_b = read_matrix("필터 B")
