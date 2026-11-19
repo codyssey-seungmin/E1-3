@@ -84,6 +84,18 @@ def load_data():
 
     return data
 
+def validate_matrix(matrix, size):
+    if not isinstance(matrix, list) or len(matrix) != size:
+        raise ValueError(f"행 개수가 {size}개여야 합니다.")
+
+    for row in matrix:
+        if not isinstance(row, list) or len(row) != size:
+            raise ValueError(f"각 행의 숫자가 {size}개여야 합니다.")
+
+        for value in row:
+            if type(value) not in (int, float):
+                raise ValueError("표에는 숫자만 들어가야 합니다.")
+
 if __name__ == "__main__":
     filter_a = read_matrix("필터 A")
     filter_b = read_matrix("필터 B")
