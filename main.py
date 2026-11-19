@@ -69,8 +69,18 @@ def normalize_label(label):
 def load_data():
     path = Path(__file__).parent / "data.json"
 
-    with open(path, "r", encoding="utf-8-sig") as file:
-        data = json.load(file)
+    try:
+        with open(path, "r", encoding="utf-8-sig") as file:
+            data = json.load(file)
+    except FileNotFoundError:
+        print("data.json 파일을 main.py와 같은 폴더에 넣어 주세요.")
+        return None
+    except (json.JSONDecodeError, UnicodeError):
+        print("data.json의 JSON 형식이나 문자 인코딩을 확인해 주세요.")
+        return None
+    except OSError as error:
+        print(f"파일을 읽을 수 없습니다: {error}")
+        return None
 
     return data
 
