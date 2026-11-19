@@ -208,6 +208,29 @@ def analyze_all_patterns(dataset):
 
     return results
 
+def print_summary(results):
+    total = len(results)
+    passed = 0
+    failures = []
+
+    for result in results:
+        if result["passed"]:
+            passed += 1
+        else:
+            failures.append(result)
+
+    print("\n[결과 요약]")
+    print("총 테스트:", total)
+    print("통과:", passed)
+    print("실패:", len(failures))
+
+    if failures:
+        print("\n실패 케이스:")
+        for result in failures:
+            print(f"- {result['case_id']}: {result['reason']}")
+    else:
+        print("모든 케이스가 통과했습니다.")
+
 if __name__ == "__main__":
     filter_a = read_matrix("필터 A")
     filter_b = read_matrix("필터 B")
