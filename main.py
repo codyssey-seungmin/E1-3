@@ -254,7 +254,7 @@ def print_performance(dataset):
             print(f"{size}×{size} | 측정 불가 | {size * size}")
             print(f"사유: {error}")
 
-if __name__ == "__main__":
+def run_manual_mode():
     filter_a = read_matrix("필터 A")
     filter_b = read_matrix("필터 B")
     print("필터 A와 B 저장 완료")
@@ -273,3 +273,48 @@ if __name__ == "__main__":
     print("\n[성능 분석: MAC 함수 1회 기준, 10회 평균]")
     print("크기 | 평균 시간(ms) | 연산 횟수(N²)")
     print(f"3×3 | {average_ms:.6f} | 9")
+
+def run_json_mode():
+    dataset = load_data()
+
+    if dataset is None:
+        return
+
+    print("\n[필터 로드]")
+    for size in (5, 13, 25):
+        try:
+            get_filters(dataset, size)
+            print(f"size_{size} 필터 로드 완료 (Cross, X)")
+        except (KeyError, ValueError, TypeError) as error:
+            print(f"size_{size} 필터 오류: {error}")
+
+    try:
+        results = analyze_all_patterns(dataset)
+    except ValueError as error:
+        print(f"분석할 수 없습니다: {error}")
+        return
+
+    print_performance(dataset)
+    print_summary(results)
+
+
+def main():
+    print("=== Mini NPU Simulator ===")
+    print("1. 사용자 입력 (3×3)")
+    print("2. data.json 분석")
+
+    while True:
+        choice = input("선택: ").strip()
+
+        if choice == "1":
+            run_manual_mode()
+            break
+        elif choice == "2":
+            run_json_mode()
+            break
+        else:
+            print("1 또는 2를 입력해 주세요.")
+
+
+if __name__ == "__main__":
+    main()
