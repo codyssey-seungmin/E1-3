@@ -231,6 +231,29 @@ def print_summary(results):
     else:
         print("모든 케이스가 통과했습니다.")
 
+def print_performance(dataset):
+    print("\n[성능 분석: MAC 1회 기준, 10회 평균]")
+    print("크기 | 평균 시간(ms) | 연산 횟수(N²)")
+
+    for size in (3, 5, 13, 25):
+        try:
+            if size == 3:
+                matrix = [
+                    [0, 1, 0],
+                    [1, 1, 1],
+                    [0, 1, 0],
+                ]
+            else:
+                filters = get_filters(dataset, size)
+                matrix = filters["Cross"]
+
+            average_ms = measure_mac_time(matrix, matrix)
+            print(f"{size}×{size} | {average_ms:.6f} | {size * size}")
+
+        except (KeyError, ValueError, TypeError) as error:
+            print(f"{size}×{size} | 측정 불가 | {size * size}")
+            print(f"사유: {error}")
+
 if __name__ == "__main__":
     filter_a = read_matrix("필터 A")
     filter_b = read_matrix("필터 B")
