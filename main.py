@@ -134,6 +134,36 @@ def get_pattern_size(case_id):
 
     return size
 
+def analyze_pattern(dataset, case_id, case):
+    size = get_pattern_size(case_id)
+    filters = get_filters(dataset, size)
+
+    if not isinstance(case, dict):
+        raise ValueError("패턴 정보는 딕셔너리여야 합니다.")
+
+    pattern = case["input"]
+    validate_matrix(pattern, size)
+
+    if not isinstance(case["expected"], str):
+        raise ValueError("expected는 문자열이어야 합니다.")
+
+    expected = normalize_label(case["expected"])
+
+    cross_score = calculate_mac(pattern, filters["Cross"])
+    x_score = calculate_mac(pattern, filters["X"])
+
+    decision = compare_scores(cross_score, x_score)
+    labels = {"A": "Cross", "B": "X", "UNDECIDED": "UNDECIDED"}
+    predicted = labels[decision]
+
+    return {
+        "cross_score": cross_score,
+        "x_score": x_score,
+        "predicted": predicted,
+        "expected": expected,
+        "passed": predicted == expected,
+    }
+
 if __name__ == "__main__":
     filter_a = read_matrix("필터 A")
     filter_b = read_matrix("필터 B")
