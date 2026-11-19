@@ -164,6 +164,50 @@ def analyze_pattern(dataset, case_id, case):
         "passed": predicted == expected,
     }
 
+def analyze_all_patterns(dataset):
+    if not isinstance(dataset, dict):
+        raise ValueError("전체 데이터는 딕셔너리여야 합니다.")
+
+    patterns = dataset.get("patterns")
+
+    if not isinstance(patterns, dict):
+        raise ValueError("patterns는 딕셔너리여야 합니다.")
+
+    results = []
+
+    for case_id, case in patterns.items():
+        try:
+            result = analyze_pattern(dataset, case_id, case)
+
+            print(f"\n--- {case_id} ---")
+            print("Cross 점수:", result["cross_score"])
+            print("X 점수:", result["x_score"])
+            print("판정:", result["predicted"])
+            print("expected:", result["expected"])
+
+            if result["passed"]:
+                result["reason"] = ""
+            elif result["predicted"] == "UNDECIDED":
+                result["reason"] = "허용오차 기준 동점으로 판정 불가"
+            else:
+                result["reason"] = "판정 결과와 expected가 다름"
+
+        except (KeyError, ValueError, TypeError) as error:
+            result = {
+                "passed": False,
+                "reason": f"데이터 검증 오류: {error}",
+            }
+
+        result["case_id"] = case_id
+        results.append(result)
+
+        if result["passed"]:
+            print("PASS")
+        else:
+            print("FAIL -", result["reason"])
+
+    return results
+
 if __name__ == "__main__":
     filter_a = read_matrix("필터 A")
     filter_b = read_matrix("필터 B")
