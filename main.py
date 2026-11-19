@@ -118,6 +118,22 @@ def get_filters(dataset, size):
 
     return filters
 
+def get_pattern_size(case_id):
+    parts = case_id.split("_")
+
+    if len(parts) != 3 or parts[0] != "size":
+        raise ValueError("패턴 이름은 size_N_idx 형식이어야 합니다.")
+
+    if not parts[1].isdigit() or not parts[2].isdigit():
+        raise ValueError("패턴 크기와 번호는 양의 정수여야 합니다.")
+
+    size = int(parts[1])
+
+    if size < 1 or int(parts[2]) < 1:
+        raise ValueError("패턴 크기와 번호는 1 이상이어야 합니다.")
+
+    return size
+
 if __name__ == "__main__":
     filter_a = read_matrix("필터 A")
     filter_b = read_matrix("필터 B")
