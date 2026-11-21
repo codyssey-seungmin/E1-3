@@ -2,6 +2,10 @@ import time
 import json
 from pathlib import Path
 
+
+EPSILON = 1e-9
+
+
 def calculate_mac(pattern, filter_data):
     total = 0.0
 
@@ -12,7 +16,7 @@ def calculate_mac(pattern, filter_data):
     return total
 
 def compare_scores(score_a, score_b):
-    if abs(score_a - score_b) < 1e-9:
+    if abs(score_a - score_b) < EPSILON:
         return "UNDECIDED"
 
     if score_a > score_b:
