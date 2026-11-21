@@ -7,6 +7,7 @@ EPSILON = 1e-9
 
 
 def calculate_mac(pattern, filter_data):
+    """같은 위치의 곱을 누적하며, 동일한 비교 조건에서 점수가 클수록 더 유사하다고 해석한다."""
     total = 0.0
 
     for row in range(len(pattern)):
