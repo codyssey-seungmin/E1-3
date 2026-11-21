@@ -24,13 +24,46 @@ def compare_scores(score_a, score_b):
 
     return "B"
 
+def generate_patterns(size):
+    if type(size) is not int or size < 1:
+        raise ValueError("패턴 크기는 1 이상의 정수여야 합니다.")
+
+    cross = []
+    x_shape = []
+    center = size // 2
+
+    for row in range(size):
+        cross_row = []
+        x_row = []
+        for col in range(size):
+            cross_row.append(1 if row == center or col == center else 0)
+            x_row.append(1 if row == col or row + col == size - 1 else 0)
+        cross.append(cross_row)
+        x_shape.append(x_row)
+
+    return {"Cross": cross, "X": x_shape}
+
+
+def print_matrix(name, matrix):
+    print(f"\n[{name}]")
+    for row in matrix:
+        print(" ".join(str(value) for value in row))
+
+
 def read_matrix(name):
     print(f"{name}을 3줄로 입력하세요. 숫자는 공백으로 구분하세요.")
+    print("자동 생성하려면 첫 줄에 Cross 또는 X를 입력하세요.")
     matrix = []
 
     for row in range(3):
         while True:
             parts = input(f"{row + 1}번째 줄: ").split()
+
+            if row == 0 and len(parts) == 1 and parts[0].lower() in ("+", "cross", "x"):
+                label = normalize_label(parts[0])
+                matrix = generate_patterns(3)[label]
+                print_matrix(f"{name}: {label} 자동 생성", matrix)
+                return matrix
 
             if len(parts) != 3:
                 print("숫자 3개를 입력해 주세요.")
@@ -242,11 +275,7 @@ def print_performance(dataset):
     for size in (3, 5, 13, 25):
         try:
             if size == 3:
-                matrix = [
-                    [0, 1, 0],
-                    [1, 1, 1],
-                    [0, 1, 0],
-                ]
+                matrix = generate_patterns(size)["Cross"]
             else:
                 filters = get_filters(dataset, size)
                 matrix = filters["Cross"]
@@ -278,6 +307,31 @@ def run_manual_mode():
     print("크기 | 평균 시간(ms) | 연산 횟수(N²)")
     print(f"3×3 | {average_ms:.6f} | 9")
 
+def run_generator_mode():
+    while True:
+        try:
+            size = int(input("패턴 크기 N (1 이상의 정수): "))
+            filters = generate_patterns(size)
+            break
+        except ValueError as error:
+            print(f"입력 오류: {error}")
+
+    for label, pattern in filters.items():
+        print_matrix(f"{size}×{size} {label}", pattern)
+        cross_score = calculate_mac(pattern, filters["Cross"])
+        x_score = calculate_mac(pattern, filters["X"])
+        decision = compare_scores(cross_score, x_score)
+        labels = {"A": "Cross", "B": "X", "UNDECIDED": "UNDECIDED"}
+        print("Cross 점수:", cross_score)
+        print("X 점수:", x_score)
+        print("판정:", labels[decision])
+
+    average_ms = measure_mac_time(filters["Cross"], filters["Cross"])
+    print("\n[성능 분석: MAC 1회 기준, 10회 평균]")
+    print("크기 | 평균 시간(ms) | 연산 횟수(N²)")
+    print(f"{size}×{size} | {average_ms:.6f} | {size * size}")
+
+
 def run_json_mode():
     dataset = load_data()
 
@@ -306,6 +360,7 @@ def main():
     print("=== Mini NPU Simulator ===")
     print("1. 사용자 입력 (3×3)")
     print("2. data.json 분석")
+    print("3. 패턴 자동 생성 (보너스)")
 
     while True:
         choice = input("선택: ").strip()
@@ -316,8 +371,11 @@ def main():
         elif choice == "2":
             run_json_mode()
             break
+        elif choice == "3":
+            run_generator_mode()
+            break
         else:
-            print("1 또는 2를 입력해 주세요.")
+            print("1, 2 또는 3을 입력해 주세요.")
 
 
 if __name__ == "__main__":
